@@ -19,3 +19,6 @@ body {
     margin: auto;
   }
   */
+  #line_dataviz > h3, #line_dataviz > svg {
+    display: block;
+  }

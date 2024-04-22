@@ -86,8 +86,13 @@ function update_line(selected_state) {
     line_width = 460 - margin.left - margin.right,
     line_height = 400 - margin.top - margin.bottom;
 
+    line_chart_div = document.getElementById("line_dataviz");
+    line_chart_div.innerHTML = "";
+
     // append the svg object to the body of the page
     const line_svg = d3.select("#line_dataviz")
+    .append("h3")
+    .text("Math Scores by Family Income Range in " + selected_state)
     .append("svg")
     .attr("width", line_width + margin.left + margin.right)
     .attr("height", line_height + margin.top + margin.bottom)
@@ -128,7 +133,7 @@ function update_line(selected_state) {
 
     // color palette
     const color = d3.scaleOrdinal()
-        .range(['#e41a1c','#377eb8','#4daf4a','#984ea3','#ff7f00','#ffff33','#a65628','#f781bf','#999999'])
+        .range(['#e41a1c','#377eb8','#4daf4a','#984ea3','#ff7f00','#a65628','#f781bf','#999999'])
 
     // Draw the line
     line_svg.selectAll(".line")
@@ -145,4 +150,5 @@ function update_line(selected_state) {
             })
 
     })
+
 }
