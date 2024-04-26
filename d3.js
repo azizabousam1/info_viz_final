@@ -26,12 +26,12 @@ var colorScale;
 const data = new Map();
 if (scoreType === "Total/Math") {
     colorScale = d3.scaleThreshold()
-    .domain([420, 460, 500, 540, 580, 620])
-    .range(d3.schemeBlues[7]);
+    .domain([420, 450, 480, 510, 540, 570, 600, 630])
+    .range(d3.schemeBlues[9]);
 } else {
     colorScale = d3.scaleThreshold()
-    .domain([420, 460, 500, 540, 580, 620])
-    .range(d3.schemeReds[7]);
+    .domain([420, 450, 480, 510, 540, 570, 600, 630])
+    .range(d3.schemeReds[9]);
 }
 
 var update_map = function(loadData) {
@@ -145,7 +145,8 @@ function update_line(selected_state) {
             family_income_data.push({
                 "Year": element["Year"],
                 "Income Range": key,
-                "Math" : element["Family Income"][key]["Math"]
+                "Math" : element["Family Income"][key]["Math"],
+                "Verbal" : element["Family Income"][key]["Verbal"]
             });
         })
     });
@@ -170,7 +171,6 @@ function update_line(selected_state) {
     // color palette
     const color = d3.scaleOrdinal()
         .range(['#e41a1c','#377eb8','#4daf4a','#984ea3','#ff7f00','#a65628','#f781bf','#999999'])
-
     // Draw the line
     line_svg.selectAll(".line")
         .data(sumstat)
@@ -181,7 +181,7 @@ function update_line(selected_state) {
             .attr("d", function(d){
             return d3.line()
                 .x(function(d) { return x(d["Year"]); })
-                .y(function(d) { return y(+d["Math"]); })
+                .y(function(d) { return y(+d[d3.select('select.scoreType').property('value')]); })
                 (d[1])
             })
 
