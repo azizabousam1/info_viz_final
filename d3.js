@@ -1,3 +1,14 @@
+// populate selectors
+d3.select('select.scoreType')
+.on('change', update_map_wrapper)
+.selectAll('option')
+.data(['Math', 'Verbal'])
+.enter()
+.append('option')
+.attr('value', d => d)
+.text(d => d);
+
+let scoreType = "Total/" + d3.select('select.scoreType').property('value');
 // The svg
 const svg = d3.select("svg"),
   width = +svg.attr("width"),
@@ -10,20 +21,20 @@ const projection = d3.geoMercator()
   .center([-40,25])
   .translate([width, height / 1.2]);
 
+var colorScale;
 // Data and color scale
 const data = new Map();
-const colorScale = d3.scaleThreshold()
-  //.domain([100000, 1000000, 10000000, 30000000, 100000000, 500000000])
-  .domain([420, 460, 500, 540, 580, 620])
-  .range(d3.schemeBlues[7]);
+if (scoreType === "Total/Math") {
+    colorScale = d3.scaleThreshold()
+    .domain([420, 460, 500, 540, 580, 620])
+    .range(d3.schemeBlues[7]);
+} else {
+    colorScale = d3.scaleThreshold()
+    .domain([420, 460, 500, 540, 580, 620])
+    .range(d3.schemeReds[7]);
+}
 
-// Load external data and boot
-Promise.all([
-d3.json("./us-states.json"),
-d3.csv("./school_scores_modified.csv", function(d) { data.set(d['State/Code'], +d['Total/Math']);
-//d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson"),
-//d3.csv("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world_population.csv", function(d) { data.set(d.code, +d.pop);
-})]).then(function(loadData){
+var update_map = function(loadData) {
     let topo = loadData[0]
 
     let mouseOver = function(d) {
@@ -75,7 +86,32 @@ d3.csv("./school_scores_modified.csv", function(d) { data.set(d['State/Code'], +
       .on("mouseleave", mouseLeave )
       .on("click", clickEvent)
 
-})
+};
+
+// Load external data and boot
+Promise.all([
+d3.json("./us-states.json"),
+d3.csv("./school_scores_modified.csv", function(d) { data.set(d['State/Code'], +d['Total/Math']);
+})]).then(update_map);
+
+function update_map_wrapper() {
+    scoreType = "Total/" + d3.select('select.scoreType').property('value');
+    if (scoreType === "Total/Math") {
+        colorScale = d3.scaleThreshold()
+        .domain([420, 450, 480, 510, 540, 570, 600, 630])
+        .range(d3.schemeBlues[9]);
+    } else {
+        colorScale = d3.scaleThreshold()
+        .domain([420, 450, 480, 510, 540, 570, 600, 630])
+        .range(d3.schemeReds[9]);
+    }
+    line_chart_div = document.getElementById("line_dataviz");
+    line_chart_div.innerHTML = "";
+    Promise.all([
+        d3.json("./us-states.json"),
+        d3.csv("./school_scores_modified.csv", function(d) { data.set(d['State/Code'], +d[scoreType]);
+        })]).then(update_map);
+}
 
 
 
@@ -92,7 +128,7 @@ function update_line(selected_state) {
     // append the svg object to the body of the page
     const line_svg = d3.select("#line_dataviz")
     .append("h3")
-    .text("Math Scores by Family Income Range in " + selected_state)
+    .text(d3.select('select.scoreType').property('value') +" Scores by Family Income Range in " + selected_state)
     .append("svg")
     .attr("width", line_width + margin.left + margin.right)
     .attr("height", line_height + margin.top + margin.bottom)

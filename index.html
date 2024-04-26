@@ -9,6 +9,18 @@
         <!-- Create an element where the map will take place -->
     </head>
     <body>
+        <div id="controls">
+            <p>Select your variables and watch the plot change.</p>
+            <ul>
+              <li>
+                <span class="scoreType">
+                  Score Type:
+                  <select class="scoreType" name="scoreType"></select>
+                </span>
+                <br />
+              </li>
+            </ul>
+        </div>
         <div id="map_div" style="text-align:center;">
             <svg id="my_dataviz" width="400" height="300"></svg>
             <script src="d3.js"></script>
