@@ -8,7 +8,25 @@ d3.select('select.scoreType')
 .attr('value', d => d)
 .text(d => d);
 
-let scoreType = "Total/" + d3.select('select.scoreType').property('value');
+d3.select('select.familyIncome')
+.on('change', update_map_wrapper)
+.selectAll('option')
+.data(['All income levels', 'Less than 20k', 'Between 20-40k', 'Between 40-60k', 'Between 60-80k', 'Between 80-100k', 'More than 100k'])
+.enter()
+.append('option')
+.attr('value', d => d)
+.text(d => d);
+
+// let scoreType = "Total/" + d3.select('select.scoreType').property('value');
+let scoreType = d3.select('select.scoreType').property('value');
+var column = "";
+if (d3.select('select.familyIncome').property('value') == 'All income levels') {
+  column = "Total/" + scoreType;
+}
+else {
+  column = "Family Income/" + d3.select('select.familyIncome').property('value') + "/" + scoreType
+}
+
 // The svg
 const svg = d3.select("svg"),
   width = +svg.attr("width"),
@@ -16,15 +34,14 @@ const svg = d3.select("svg"),
 
 // Map and projection
 const path = d3.geoPath();
-const projection = d3.geoMercator()
-  .scale(180)
-  .center([-40,25])
-  .translate([width, height / 1.2]);
+const projection = d3.geoAlbersUsa()
+  .scale(1000)
+  .translate([width / 2, height / 2]);
 
 var colorScale;
 // Data and color scale
 const data = new Map();
-if (scoreType === "Total/Math") {
+if (scoreType === "Math") {
     colorScale = d3.scaleThreshold()
     .domain([420, 450, 480, 510, 540, 570, 600, 630])
     .range(d3.schemeBlues[9]);
@@ -86,6 +103,37 @@ var update_map = function(loadData) {
       .on("mouseleave", mouseLeave )
       .on("click", clickEvent)
 
+  // Assuming svg is your main svg element and colorScale is your color scale
+  const legend = svg.append("g")
+  .attr("transform", "translate(20,20)"); // Adjust as needed
+
+  const legendItemSize = 20; // Size of the legend item
+  const legendSpacing = 5; // Spacing between legend items
+
+  const colorDomain = colorScale.domain(); // Get the domain of the color scale
+  const colorRange = colorScale.range(); // Get the range of the color scale
+
+  colorRange.forEach(function(color, i) {
+  const legendItem = legend.append("g")
+    .attr("transform", `translate(0,${i * (legendItemSize + legendSpacing)})`);
+
+  // Add the color rectangle
+  legendItem.append("rect")
+    .attr("width", legendItemSize)
+    .attr("height", legendItemSize)
+    .style("fill", color);
+
+  // Calculate the range for this color
+  const rangeMin = i === 0 ? 0 : colorDomain[i - 1];
+  const rangeMax = i === 0 ? colorDomain[i] - 1 : (i < colorDomain.length - 1 ? colorDomain[i] - 1 : `${colorDomain[i - 1]}+`);
+
+  // Add the text label
+  legendItem.append("text")
+    .attr("x", legendItemSize + legendSpacing)
+    .attr("y", legendItemSize - legendSpacing)
+    .style("font-size", "10px") // Smaller font size
+    .text(`${rangeMin} - ${rangeMax}`);
+});
 };
 
 // Load external data and boot
@@ -95,8 +143,16 @@ d3.csv("./school_scores_modified.csv", function(d) { data.set(d['State/Code'], +
 })]).then(update_map);
 
 function update_map_wrapper() {
-    scoreType = "Total/" + d3.select('select.scoreType').property('value');
-    if (scoreType === "Total/Math") {
+    let scoreType = d3.select('select.scoreType').property('value');
+    var column = "";
+    if (d3.select('select.familyIncome').property('value') == 'All income levels') {
+      column = "Total/" + scoreType;
+    }
+    else {
+      column = "Family Income/" + d3.select('select.familyIncome').property('value') + "/" + scoreType
+    }
+    // scoreType = "Total/" + d3.select('select.scoreType').property('value');
+    if (scoreType === "Math") {
         colorScale = d3.scaleThreshold()
         .domain([420, 450, 480, 510, 540, 570, 600, 630])
         .range(d3.schemeBlues[9]);
@@ -109,7 +165,7 @@ function update_map_wrapper() {
     line_chart_div.innerHTML = "";
     Promise.all([
         d3.json("./us-states.json"),
-        d3.csv("./school_scores_modified.csv", function(d) { data.set(d['State/Code'], +d[scoreType]);
+        d3.csv("./school_scores_modified.csv", function(d) { data.set(d['State/Code'], +d[column]);
         })]).then(update_map);
 }
 

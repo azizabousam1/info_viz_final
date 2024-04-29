@@ -1,31 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
+  <head>
+    <meta charset="utf-8" />
 
-        <!-- Load d3.js -->
-        <script src="https://d3js.org/d3.v6.js"></script>
-        <link rel="stylesheet" href="styles.css">
-        <!-- Create an element where the map will take place -->
-    </head>
-    <body>
+    <!-- Load d3.js -->
+    <script src="https://d3js.org/d3.v6.js"></script>
+    <link rel="stylesheet" href="styles.css" />
+    <!-- Create an element where the map will take place -->
+  </head>
+  <body>
+    <div id="layout">
+      <div id="map-container">
         <div id="controls">
-            <p>Select your variables and watch the plot change.</p>
-            <ul>
-              <li>
-                <span class="scoreType">
-                  Score Type:
-                  <select class="scoreType" name="scoreType"></select>
-                </span>
-                <br />
-              </li>
-            </ul>
+          <p>Select your variables and watch the plot change.</p>
+          <ul>
+            <li>
+              <span class="scoreType">
+                Score Type:
+                <select class="scoreType" name="scoreType"></select>
+              </span>
+              <br />
+            </li>
+            <li>
+              <span class="scoreType">
+                Income Level:
+                <select class="familyIncome" name="familyIncome"></select>
+              </span>
+              <br />
+            </li>
+          </ul>
         </div>
-        <div id="map_div" style="text-align:center;">
-            <svg id="my_dataviz" width="400" height="300"></svg>
-            <script src="d3.js"></script>
+        <div id="map_div" style="text-align: center">
+          <svg id="my_dataviz" width="1000" height="600"></svg>
+          <script src="d3.js"></script>
         </div>
-        <div id="line_dataviz" style="float:left;width:50%;">
-        </div>
-    </body>
+      </div>
+      <div id="detail-container">
+        <div id="line_dataviz" style="float: left; width: 50%"></div>
+      </div>
+    </div>
+  </body>
 </html>

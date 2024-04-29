@@ -1,24 +1,94 @@
 body {
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
-  }
-  
-  .axis line,
-  .axis path {
-    stroke: black;
-    opacity: 0.2;
-  }
-  
-  .axis text {
-    fill: black;
-    opacity: 0.8;
-  }
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
 
-  /*
+.axis line,
+.axis path {
+  stroke: black;
+  opacity: 0.2;
+}
+
+.axis text {
+  fill: black;
+  opacity: 0.8;
+}
+
+/*
   #map_div {
     display: block;
     margin: auto;
   }
   */
-  #line_dataviz > h3, #line_dataviz > svg {
-    display: block;
-  }
+#line_dataviz > h3,
+#line_dataviz > svg {
+  display: block;
+}
+
+div#layout {
+  display: flex;
+  flex-direction: row;
+
+}
+
+/* Styles for the controls div */
+#controls {
+  background-color: #f8f8f8; /* Light gray background */
+  padding: 20px; /* Padding around the content */
+  border-radius: 15px; /* Rounded corners */
+  display: inline-block; /* Display as inline block */
+  margin-bottom: 20px; /* Space below the div */
+}
+
+/* Styles for the paragraph */
+#controls p {
+  font-size: 1.2em; /* Slightly larger font size */
+  margin-bottom: 10px; /* Space below the paragraph */
+}
+
+/* Styles for the list */
+#controls ul {
+  list-style-type: none; /* No bullet points */
+  padding: 0; /* No padding */
+}
+
+/* Styles for the list items */
+#controls li {
+  margin-bottom: 10px; /* Space below each list item */
+}
+
+/* Styles for the select elements */
+.scoreType, .familyIncome {
+  margin-left: 10px; /* Space to the left of the select elements */
+  padding: 5px; /* Padding inside the select elements */
+  font-size: 1em; /* Font size */
+  color: #333; /* Text color */
+  background-color: #fff; /* Background color */
+}
+
+/* Styles for the select elements on hover */
+.scoreType:hover, .familyIncome:hover {
+  border-color: #888; /* Darker border when hovered */
+}
+
+/* Styles for the select elements when focused */
+.scoreType:focus, .familyIncome:focus {
+  outline: none; /* Removes focus outline */
+  border-color: #007BFF; /* Blue border when focused */
+}
+
+/* Styles for the detail-container div */
+#detail-container {
+  border: 1px solid #ccc; /* Border around the div */
+  padding: 20px; /* Padding around the content */
+  border-radius: 5px; /* Rounded corners */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15); /* Shadow for a "lifted" effect */
+  background-color: #fff; /* White background */
+  width: 80%; /* Width of the box */
+  margin: 0 auto; /* Center the box */
+}
+
+/* Styles for the line_dataviz div */
+#line_dataviz {
+  width: 100%; /* Full width of the parent container */
+  height: 400px; /* Set a height */
+}
