@@ -78,7 +78,7 @@ var update_map = function(loadData) {
   }
 
   let clickEvent = function(d) {
-    update_line(d['srcElement']['__data__']['id']);
+    update_line(d['srcElement']['__data__']['properties']);
   }
 
   // Draw the map
@@ -93,7 +93,8 @@ var update_map = function(loadData) {
       )
       // set the color of each country
       .attr("fill", function (d) {
-        d.total = data.get(d.id) || 0;
+        d.total = data.get(d.properties.NAME) || 0;
+        console.log(d.total)
         return colorScale(d.total);
       })
       .style("stroke", "transparent")
@@ -139,7 +140,7 @@ var update_map = function(loadData) {
 // Load external data and boot
 Promise.all([
 d3.json("./us-states.json"),
-d3.csv("./school_scores_modified.csv", function(d) { data.set(d['State/Code'], +d['Total/Math']);
+d3.csv("./school_scores_modified.csv", function(d) { data.set(d['State/Name'], +d['Total/Math']);
 })]).then(update_map);
 
 function update_map_wrapper() {
@@ -165,14 +166,14 @@ function update_map_wrapper() {
     line_chart_div.innerHTML = "";
     Promise.all([
         d3.json("./us-states.json"),
-        d3.csv("./school_scores_modified.csv", function(d) { data.set(d['State/Code'], +d[column]);
+        d3.csv("./school_scores_modified.csv", function(d) { data.set(d['State/Name'], +d[column]);
         })]).then(update_map);
 }
 
 
 
 function update_line(selected_state) {
-
+    console.log(selected_state)
     // set the dimensions and margins of the graph
     const margin = {top: 10, right: 30, bottom: 30, left: 60},
     line_width = 460 - margin.left - margin.right,
@@ -184,7 +185,7 @@ function update_line(selected_state) {
     // append the svg object to the body of the page
     const line_svg = d3.select("#line_dataviz")
     .append("h3")
-    .text(d3.select('select.scoreType').property('value') +" Scores by Family Income Range in " + selected_state)
+    .text(d3.select('select.scoreType').property('value') +" Scores by Family Income Range in " + selected_state.NAME)
     .append("svg")
     .attr("width", line_width + margin.left + margin.right)
     .attr("height", line_height + margin.top + margin.bottom)
@@ -195,7 +196,7 @@ function update_line(selected_state) {
     d3.json("./school_scores.json").then( function(data) {
 
     var family_income_data = [];
-    const state_filtered_data = data.filter(d => d.State.Code === selected_state);
+    const state_filtered_data = data.filter(d => d.State.Name === selected_state);
     state_filtered_data.forEach(element => {
         Object.keys(element["Family Income"]).forEach(key => {
             family_income_data.push({
