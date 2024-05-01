@@ -90,7 +90,7 @@ div#layout {
 /* Styles for the line_dataviz div */
 #line_dataviz {
   width: 100%; /* Full width of the parent container */
-  height: 400px; /* Set a height */
+  height: 600px; /* Set a height */
   overflow: visible;
 }
 
