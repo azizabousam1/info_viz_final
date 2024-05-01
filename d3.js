@@ -71,6 +71,10 @@ var update_map = function(loadData) {
       .transition()
       .duration(200)
       .style("opacity", .8)
+      .on("end", function() {
+        d3.select(this)
+          .style("stroke", "transparent");
+      });
     d3.select(this)
       .transition()
       .duration(200)
@@ -79,6 +83,7 @@ var update_map = function(loadData) {
 
   let clickEvent = function(d) {
     update_line(d['srcElement']['__data__']['properties']);
+    update_rankings(d['srcElement']['__data__']['properties']);
   }
 
   // Draw the map
@@ -94,7 +99,6 @@ var update_map = function(loadData) {
       // set the color of each country
       .attr("fill", function (d) {
         d.total = data.get(d.properties.NAME) || 0;
-        console.log(d.total)
         return colorScale(d.total);
       })
       .style("stroke", "transparent")
@@ -162,8 +166,8 @@ function update_map_wrapper() {
         .domain([420, 450, 480, 510, 540, 570, 600, 630])
         .range(d3.schemeReds[9]);
     }
-    line_chart_div = document.getElementById("line_dataviz");
-    line_chart_div.innerHTML = "";
+    // line_chart_div = document.getElementById("line_dataviz");
+    // line_chart_div.innerHTML = "";
     Promise.all([
         d3.json("./us-states.json"),
         d3.csv("./school_scores_modified.csv", function(d) { data.set(d['State/Name'], +d[column]);
@@ -173,9 +177,9 @@ function update_map_wrapper() {
 
 
 function update_line(selected_state) {
-    console.log(selected_state)
+
     // set the dimensions and margins of the graph
-    const margin = {top: 10, right: 30, bottom: 30, left: 60},
+    const margin = {top: 10, right: 30, bottom: 100, left: 60},
     line_width = 460 - margin.left - margin.right,
     line_height = 400 - margin.top - margin.bottom;
 
@@ -196,7 +200,7 @@ function update_line(selected_state) {
     d3.json("./school_scores.json").then( function(data) {
 
     var family_income_data = [];
-    const state_filtered_data = data.filter(d => d.State.Name === selected_state);
+    const state_filtered_data = data.filter(d => d.State.Name === selected_state.NAME);
     state_filtered_data.forEach(element => {
         Object.keys(element["Family Income"]).forEach(key => {
             family_income_data.push({
@@ -209,10 +213,10 @@ function update_line(selected_state) {
     });
     // group the data: I want to draw one line per group
     const sumstat = d3.group(family_income_data, d => d["Income Range"]); // nest function allows to group the calculation per level of a factor
-    console.log(sumstat);
+    // console.log(sumstat);
     // Add X axis --> it is a date format
     const x = d3.scaleLinear()
-        .domain([2004, 2015])
+        .domain([2005, 2015])
         .range([ 0, line_width ]);
     line_svg.append("g")
         .attr("transform", `translate(0, ${line_height})`)
@@ -244,4 +248,80 @@ function update_line(selected_state) {
 
     })
 
+    // Add X axis label
+    line_svg.append("text")
+    .attr("text-anchor", "middle")
+    .attr("transform", `translate(${line_width / 2}, ${line_height + margin.top + 30})`) // Adjust position as needed
+    .text("Year");
+
+    // Add Y axis label
+    line_svg.append("text")
+    .attr("text-anchor", "middle")
+    .attr("transform", "rotate(-90)")
+    .attr("y", -40)
+    .attr("x", -line_height / 2)
+    .text("Score"); // Change text as needed
+
+
+}
+
+function update_rankings(selected_state) {
+  // set the dimensions and margins of the graph
+  const margin = {top: 10, right: 30, bottom: 100, left: 60},
+  line_width = 460 - margin.left - margin.right,
+  line_height = 400 - margin.top - margin.bottom;
+
+  line_chart_div = document.getElementById("state_rankings");
+  line_chart_div.innerHTML = "";
+
+  // Assume 'data' contains your JSON data
+
+  d3.json("./school_scores_modified.json").then(function(data) {
+    // Sort the data by test-takers
+    const testTakersSorted = data.slice().sort((a, b) => b.Total["Test-takers"] - a.Total["Test-takers"]);
+
+    // Find the rank of the specific state in test-takers
+    const stateTestTakersRank = testTakersSorted.findIndex(d => d.State.Name === selected_state.NAME) + 1;
+
+    // Sort the data by math score
+    const mathScoreSorted = data.slice().sort((a, b) => b.Total.Math - a.Total.Math);
+
+    // Find the rank of the specific state in math score
+    const stateMathScoreRank = mathScoreSorted.findIndex(d => d.State.Name === selected_state.NAME) + 1;
+
+    // Sort the data by verbal score
+    const verbalScoreSorted = data.slice().sort((a, b) => b.Total.Verbal - a.Total.Verbal);
+
+    // Find the rank of the specific state in verbal score
+    const stateVerbalScoreRank = verbalScoreSorted.findIndex(d => d.State.Name === selected_state.NAME) + 1;
+
+    // Calculate total score (math + verbal) and sort the data by total score
+    const totalScoreSorted = data.slice().sort((a, b) => (b.Total.Math + b.Total.Verbal) - (a.Total.Math + a.Total.Verbal));
+
+    // Find the rank of the specific state in total score
+    const stateTotalScoreRank = totalScoreSorted.findIndex(d => d.State.Name === selected_state.NAME) + 1;
+
+    // Output the ranks
+    console.log("Test-takers rank:", stateTestTakersRank);
+    console.log("Math score rank:", stateMathScoreRank);
+    console.log("Verbal score rank:", stateVerbalScoreRank);
+    console.log("Total score rank:", stateTotalScoreRank);
+
+    const container = d3.select("#state_rankings");
+
+    const boxData = [
+      { label: "Total test-takers rank", value: stateTestTakersRank },
+      { label: "Math score rank", value: stateMathScoreRank },
+      { label: "Verbal score rank", value: stateVerbalScoreRank },
+      { label: "Total score rank", value: stateTotalScoreRank }
+    ];
+    
+    // Append a <div> for each box
+    const boxes = container.selectAll(".box")
+      .data(boxData)
+      .enter()
+      .append("div")
+      .attr("class", "box")
+      .html(d => `<span class="label">${d.label}</span><span class="value">${d.value}</span>`);
+  });
 }

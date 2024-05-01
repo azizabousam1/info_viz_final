@@ -91,4 +91,29 @@ div#layout {
 #line_dataviz {
   width: 100%; /* Full width of the parent container */
   height: 400px; /* Set a height */
+  overflow: visible;
+}
+
+/* Styles for the line_dataviz div */
+#state_rankings {
+  width: 100%; /* Full width of the parent container */
+  height: 400px; /* Set a height */
+  overflow: visible;
+}
+
+.box {
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+}
+
+.label {
+  font-weight: bold;
+}
+
+.value {
+  margin-left: 10px;
+  color: #007bff; /* Blue color for the value */
 }
