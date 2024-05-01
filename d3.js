@@ -324,8 +324,11 @@ function update_rankings(selected_state) {
   line_chart_div.innerHTML = "";
 
   // Assume 'data' contains your JSON data
+  Promise.all([
+    d3.json("./school_scores_modified.json"),
+    d3.csv("./us_states_naep_standards.csv")
+  ]).then(function([data, naepDataCSV]) {
 
-  d3.json("./school_scores_modified.json").then(function(data) {
     // Sort the data by test-takers
     const testTakersSorted = data.slice().sort((a, b) => b.Total["Test-takers"] - a.Total["Test-takers"]);
 
@@ -350,6 +353,7 @@ function update_rankings(selected_state) {
     // Find the rank of the specific state in total score
     const stateTotalScoreRank = totalScoreSorted.findIndex(d => d.State.Name === selected_state.NAME) + 1;
 
+
     // Output the ranks
     // console.log("Test-takers rank:", stateTestTakersRank);
     // console.log("Math score rank:", stateMathScoreRank);
@@ -358,12 +362,28 @@ function update_rankings(selected_state) {
 
     const container = d3.select("#state_rankings");
 
-    const boxData = [
+    var boxData = [
       { label: "Total test-takers rank", value: stateTestTakersRank },
       { label: "Math score rank", value: stateMathScoreRank },
       { label: "Verbal score rank", value: stateVerbalScoreRank },
       { label: "Total score rank", value: stateTotalScoreRank }
     ];
+
+    // Find the NAEP standard of the specific state
+    let stateStandardsData = naepDataCSV.filter(d => d.State === selected_state.NAME)[0];
+    if (stateStandardsData["Grade 4 Reading"] != "") {
+        boxData.push({ label: "Grade 4 Reading", value: stateStandardsData["Grade 4 Reading"] });
+    }
+    if (stateStandardsData["Grade 4 Math"] != "") {
+        boxData.push({ label: "Grade 4 Math", value: stateStandardsData["Grade 4 Math"] });
+    }
+    if (stateStandardsData["Grade 8 Reading"] != "") {
+        boxData.push({ label: "Grade 8 Reading", value: stateStandardsData["Grade 8 Reading"] });
+    }
+    if (stateStandardsData["Grade 8 Math"] != "") {
+        boxData.push({ label: "Grade 8 Math", value: stateStandardsData["Grade 8 Math"] });
+    }
+    console.log(boxData);
     
     // Append a <div> for each box
     const boxes = container.selectAll(".box")
@@ -372,7 +392,11 @@ function update_rankings(selected_state) {
       .append("div")
       .attr("class", "box")
       .html(d => `<span class="label">${d.label}</span><span class="value">${d.value}</span>`);
+
+    
   });
+
+  
 }
 
 function update_comparison(selected_state) {
