@@ -85,6 +85,15 @@ div#layout {
   background-color: #fff; /* White background */
   width: 80%; /* Width of the box */
   margin: 0 auto; /* Center the box */
+  margin-left: -100px; /* Move the box 50 pixels to the left */
+  display: flex;
+  flex-direction: row;
+}
+
+#detail-right {
+  display: flex;
+  flex-direction: column;
+  gap: 70px;
 }
 
 /* Styles for the line_dataviz div */

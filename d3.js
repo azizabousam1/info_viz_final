@@ -35,7 +35,7 @@ const svg = d3.select("svg"),
 // Map and projection
 const path = d3.geoPath();
 const projection = d3.geoAlbersUsa()
-  .scale(1000)
+  .scale(900)
   .translate([width / 2, height / 2]);
 
 var colorScale;
@@ -43,11 +43,11 @@ var colorScale;
 const data = new Map();
 if (scoreType === "Math") {
     colorScale = d3.scaleThreshold()
-    .domain([420, 450, 480, 510, 540, 570, 600, 630])
+    .domain([0, 420, 450, 480, 510, 540, 570, 600, 630])
     .range(d3.schemeBlues[9]);
 } else {
     colorScale = d3.scaleThreshold()
-    .domain([420, 450, 480, 510, 540, 570, 600, 630])
+    .domain([0, 420, 450, 480, 510, 540, 570, 600, 630])
     .range(d3.schemeReds[9]);
 }
 
@@ -109,8 +109,12 @@ var update_map = function(loadData) {
       .on("mouseleave", mouseLeave )
       .on("click", clickEvent)
 
+  // Clear the legend
+  svg.select(".legend").remove();
+
   // Assuming svg is your main svg element and colorScale is your color scale
   const legend = svg.append("g")
+  .attr("class", "legend")
   .attr("transform", "translate(20,20)"); // Adjust as needed
 
   const legendItemSize = 20; // Size of the legend item
@@ -130,8 +134,8 @@ var update_map = function(loadData) {
     .style("fill", color);
 
   // Calculate the range for this color
-  const rangeMin = i === 0 ? 0 : colorDomain[i - 1];
-  const rangeMax = i === 0 ? colorDomain[i] - 1 : (i < colorDomain.length - 1 ? colorDomain[i] - 1 : `${colorDomain[i - 1]}+`);
+  const rangeMin = colorDomain[i];
+  const rangeMax = i < colorDomain.length - 1 ? colorDomain[i + 1] - 1 : 800;
 
   // Add the text label
   legendItem.append("text")
@@ -139,7 +143,7 @@ var update_map = function(loadData) {
     .attr("y", legendItemSize - legendSpacing)
     .style("font-size", "10px") // Smaller font size
     .text(`${rangeMin} - ${rangeMax}`);
-});
+  });
 };
 
 // Load external data and boot
@@ -160,11 +164,11 @@ function update_map_wrapper() {
     // scoreType = "Total/" + d3.select('select.scoreType').property('value');
     if (scoreType === "Math") {
         colorScale = d3.scaleThreshold()
-        .domain([420, 450, 480, 510, 540, 570, 600, 630])
+        .domain([200, 420, 450, 480, 510, 540, 570, 600, 630])
         .range(d3.schemeBlues[9]);
     } else {
         colorScale = d3.scaleThreshold()
-        .domain([420, 450, 480, 510, 540, 570, 600, 630])
+        .domain([0, 420, 450, 480, 510, 540, 570, 600, 630])
         .range(d3.schemeReds[9]);
     }
     // line_chart_div = document.getElementById("line_dataviz");
