@@ -284,6 +284,36 @@ function update_line(selected_state) {
                 .y(function(d) { return y(+d["Verbal"]); })
                 (d[1])
             })
+        
+        // Function to add legend with customizable position
+        function addLegend(svg, color, incomeRanges, xPos, yPos) {
+          const legend = svg.append("g")
+              .attr("transform", "translate(" + xPos + "," + yPos + ")");
+
+          incomeRanges.forEach((range, i) => {
+              const legendItem = legend.append("g")
+                  .attr("transform", "translate(0," + (i * 20) + ")");
+
+              legendItem.append("rect")
+                  .attr("x", 0)
+                  .attr("width", 10)
+                  .attr("height", 10)
+                  .style("fill", color(range));
+
+              legendItem.append("text")
+                  .attr("x", 15)
+                  .attr("y", 5)
+                  .attr("dy", ".35em")
+                  .style("font-size", 10) // Set font size
+                  .text(range);
+          });
+        }
+
+        // Call the function to add legend for Math scores at position (x, y)
+        addLegend(line_svg, color, Array.from(sumstat.keys()), line_width - 120, line_height - 120);
+
+        // Call the function to add legend for Verbal scores at position (x, y)
+        addLegend(line_svg2, color, Array.from(sumstat.keys()), line_width - 120, line_height - 120);
 
     })
 
